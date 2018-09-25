@@ -81,6 +81,7 @@ $(document).on("click", ".toModal,.tinyModalOpen", function(event) {
   try {
     var uri = window.location.href;
     var m = $(this).attr("tomodal");
+
     if ($(".blackx").length > 0) {
       $(".blackx").remove();
       $(".backdrop").remove();
@@ -88,22 +89,25 @@ $(document).on("click", ".toModal,.tinyModalOpen", function(event) {
     ifr = `
     <div class='blackx'>
         <div id='master-modal' class='whitex overflow white-responsive'>
+            <button type='button' class='find' onclick="find()" >find</button>
             <button type='button' class='close' data-dismiss='modal'>×</button>           
             <div class='secondWhite'>${loading}</div>
             <div class='thirdWhite' id='thirdWhite' style='display:none'>
-                <iframe src="${uri}" id="nexti" scrolling="no" style="width:100%; border:none;height:100vh" onload="fini('cargado')"></iframe>
+                <iframe src="${uri}" id="nexti" scrolling="no" style="width:100%; border:none;height:90vh" onload="fini('cargado')"></iframe>
             </div>
         </div>
     </div>
     <div class='backdrop'></div>
     <script>
     var auto=0;
+    var uri_="";
     function fini(){        
         if(auto>0){
             $(".thirdWhite").fadeIn();
             $(".secondWhite").fadeOut();
         }
         else{
+          goCurso();
             auto++;
         }
     }
@@ -111,10 +115,19 @@ $(document).on("click", ".toModal,.tinyModalOpen", function(event) {
       $(".secondWhite").fadeIn();
       $(".blackx,.whitex,.backdrop").fadeIn();
       $("body").css("overflow", "hidden");
-    setTimeout(() => {      
+    function goCurso() {      
       var $f = $("#nexti");
       $f[0].contentWindow.irCurso(${m});
-    }, 3000);
+    };
+    function find(){
+      debugger;
+      console.log(window.frames)
+      var n=$("[name=Frame3]").contentWindow;
+      console.log(n);
+      uri_=window.frames.location.href;
+      var if_='<iframe src="'+uri_+'" id="videoteca" scrolling="no" style="width:100%; border:none;height:90vh" ></iframe>';
+      $("body").append(if_);
+    }
     </script>`;
     $("body").append(ifr);
   } catch (error) {
@@ -129,6 +142,13 @@ window.cambia = function(args) {
 
 function cambia() {
   $("body").html();
+
+}
+
+function find(){
+  var uri=window.frames.location.href;
+  var if_=`<iframe src="${uri}" id="videoteca" scrolling="no" style="width:100%; border:none;height:90vh" ></iframe>`;
+  $("body").append(if_);
 }
 
 if ($("#myModal1").length < 1) {

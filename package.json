@@ -1,0 +1,38 @@
+{
+  "name": "extension-unir",
+  "version": "1.0.0",
+  "description": "basic files to create a chrome extension once intalled is possible to open the courses with a custom modal make it with css and JavaScript.",
+  "main": "content.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andyman1907/unir-chrome-extension.git"
+  },
+  "author": "ingeniero andres mora",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/andyman1907/unir-chrome-extension/issues"
+  },
+  "homepage": "https://github.com/andyman1907/unir-chrome-extension#readme",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "dploy": "^1.2.0",
+    "gulp-babel": "^7.0.1",
+    "gulp-clean-css": "^3.9.3",
+    "gulp-composer": "^0.4.5",
+    "gulp-concat": "^2.6.1",
+    "gulp-concat-css": "^3.1.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-replace": "^1.0.0",
+    "gulp-sequence": "^1.0.0",
+    "gulp-sourcemaps": "^2.6.4",
+    "gulp-watch": "^5.0.0",
+    "pump": "^3.0.0",
+    "run-git-command": "^1.0.1",
+    "run-sequence": "^2.2.1"
+  }
+}
