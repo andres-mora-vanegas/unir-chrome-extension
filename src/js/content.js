@@ -16,6 +16,8 @@ function modal() {
     <div class='backdrop'></div>`;
 }
 
+
+
 /**
  * esta funcion se encarga de abrir el modal
  */
