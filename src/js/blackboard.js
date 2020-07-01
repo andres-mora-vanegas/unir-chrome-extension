@@ -10,10 +10,10 @@ const blackboard = {
       let params = new URLSearchParams(url.search);
       const id = params.get("current_cat_id");
       if (/catalogMgr/.test(href) && id != null) {
-        const coursesByCategory = await getCoursesByCategory(id);
+        const coursesByCategory = await blackboard.getCoursesByCategory(id);
         if (coursesByCategory != null && coursesByCategory.results.length > 0) {
           for (const item of coursesByCategory.results) {
-            const course = await getCoursesById(item.courseId);
+            const course = await blackboard.getCoursesById(item.courseId);
             response.push(course);
           }
         }
@@ -25,6 +25,12 @@ const blackboard = {
   },
   usersIcon: () => {
     return `<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABAklEQVQ4T83TMSvFURgG8N9dxCKFzWZRkmwGizIQXcXiE7iYJSnfwWShJCmTUclCDCZhkZkNhcVyi95/R53+kXKX+9YZzjk9z/s8z3lPRYNVaRCvuQjWsI4LVDGFTQqVizjDPTpwjPGwn1v4QGvKZBK76Er7Z2xjNcuswOYEJxjDO/pxhe4EeMIMztP+5Zs8J2jDKG7xiNnMwgIOMZykb+C1rKAPA4hukUO99MQtWEJPyiAUFxZiRVjRJSoURGgjGMQnbvCAnSynawwFeAJHCXyHFeyjvaTgDfPYQ6iJWg6C3uQ9Di5xis5fJjReo4bpdL/10yQe/DHec/l9c43yvz7mF8dpLMC3tJ3tAAAAAElFTkSuQmCC" />`;
+  },
+  organizationIcon: () => {
+    return `<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAmElEQVQ4T+3TsQkCQRCF4e9C7cMqDCxCBVEj+7jAUjQRRQRjC7AKy1ATAznYNThZbo8zdLJl5v3MzrwpdIwioR+gRD/kH1jjVq9PAbYY4RoEQ1ywygUc8cIsCOrvDyd2MMUGvcyRPLHEKQIOqCBtYod5BFQtjtuosa+++Af8cAad1zgJRoreb9roHQucU7fQBPiycragXvgGr1wgEdi2CvkAAAAASUVORK5CYII=" />`;
+  },
+  courseIcon: () => {
+    return `<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA90lEQVQ4T6XTuy4EYRjG8d/agkpQULoDcS9IhCsQh0Ihcaocit1yFzdAIXEhSuIOqDRER+GQNz6bL2t2jMyUk+/7P/P833caaj6NmveVAWbRSgFbuCkKKwJM4whL9AI+cYFd3OegHDCRDqxieEC1N3RTwHOcCcAINrCNsYpO4vIxOj+Adez8EzAeNfMK8SI6rv1RoZPSn7DQL3EGLzjEcibxI0ncxyjuEGJ/Aa4whRA51DfG0HOCByyWAebwjlNEYnzlAVbQxGUZIGS2MwePCTCZpvOKTZxhHteDFqnIwTn2UoXetKuscsiKVb6tusoVd+n7WO2/8QulMjHdyCMI0QAAAABJRU5ErkJggg==" />`;
   },
   getCoursesByCategory: async (category) => {
     const url = `/learn/api/public/v1/catalog/categories/course/${category}/courses`;
@@ -43,7 +49,7 @@ const blackboard = {
       const $container = document.createElement("div");
       const $mainDiv = document.querySelector("#containerdiv");
       let html = `<hr><h3>Cursos disponibles de la categoría</h3>`;
-      const courses = await validCategoryCourses();
+      const courses = await blackboard.validCategoryCourses();
       if (courses.length > 0) {
         for (const course of courses) {
           html += `<a href ="${course.externalAccessUrl}" target="_blank" >${course.name}</a><br>`;
@@ -68,17 +74,17 @@ const blackboard = {
       const shorcut = `${master_link}/webapps/blackboard/execute/`;
       if (/ultra\/stream/.test(href) && $baseTools != null) {
         $baseTools.innerHTML += `<hr style="margin:0px">`;
-        $baseTools.innerHTML += mainMenuItem(
+        $baseTools.innerHTML += blackboard.mainMenuItem(
           `${shorcut}courseManager?sourceType=COURSES`,
           "Cursos Admin",
           "icon-medium-courses"
         );
-        $baseTools.innerHTML += mainMenuItem(
+        $baseTools.innerHTML += blackboard.mainMenuItem(
           `${shorcut}catalogMgr?cat_type=CRS`,
           "Categorías Admin",
           "icon-medium-courses"
         );
-        $baseTools.innerHTML += mainMenuItem(
+        $baseTools.innerHTML += blackboard.mainMenuItem(
           `${shorcut}userManager`,
           "Usuarios Admin",
           "icon-medium-groups"
@@ -111,7 +117,7 @@ const blackboard = {
                     aria-hidden="true"
                     bb-cache-compilation="svg-icon"
                   >
-                    <use
+                    <usek¿
                       xlink:href="https://ucentral.blackboard.com/ultra/stream#${icon}"
                       ng-href="https://ucentral.blackboard.com/ultra/stream#${icon}"
                     ></use>
@@ -145,6 +151,8 @@ const blackboard = {
       <a href="${base}/webapps/portal/execute/tabs/tabAction?tabType=admin" >Administrador</a>
       <br>
       <a href="${base}/webapps/blackboard/execute/courseManager?sourceType=COURSES" >Buscar cursos</a>
+      <br>
+      <a href="${base}/webapps/blackboard/execute/courseManager?sourceType=CLUBS" >Buscar organizaciones</a>
       <br>
       <a href="${base}/webapps/blackboard/execute/userManager?course_id=" >Buscar usuarios</a>
       <br>
@@ -198,7 +206,7 @@ const blackboard = {
     a.href = window.URL.createObjectURL(
       new Blob(data, { type: "application/json" })
     );
-    a.download = extractCourseId() + ".json";
+    a.download = blackboard.extractCourseId() + ".json";
 
     // Append anchor to body.
     document.body.appendChild(a);
@@ -224,7 +232,12 @@ const blackboard = {
   },
   getEnrollLink: function () {
     try {
-      document.querySelectorAll("#listContainer_databody tr").forEach((e) => {
+      if (!/courseManager/.test(window.location.href)) {
+        return false;
+      }
+      const trs = document.querySelectorAll("#listContainer_databody tr");
+
+      trs.forEach((e) => {
         const newButton = document.createElement("a");
         let h = e
           .querySelectorAll("td")[1]
@@ -234,13 +247,96 @@ const blackboard = {
         let uri = `${base}/webapps/blackboard/execute/courseEnrollment?sortDir=ASCENDING&showAll=true&sourceType=COURSES&editPaging=false&course_id=${h}&startIndex=0`;
 
         newButton.setAttribute("href", uri);
-        newButton.innerHTML = usersIcon();
+        newButton.setAttribute("target", "_blank");
+        newButton.setAttribute("title", "Inscripciones");
+        newButton.setAttribute("style", "float:right");
+
+        newButton.innerHTML = blackboard.usersIcon();
         e.querySelectorAll("td")[1]
           .querySelectorAll("a")[0]
-          .parentElement.appendChild(newButton);
+          .parentElement.parentElement.appendChild(newButton);
       });
     } catch (e) {
       blackboard.doCatch(e);
+    }
+  },
+  getUserLinkFromEnroll: function () {
+    try {
+      if (!/execute\/courseEnrollment/.test(window.location.href)) {
+        return false;
+      }
+      const trs = document.querySelectorAll("#listContainer_databody tr");
+
+      trs.forEach((e) => {
+        const organizationButton = document.createElement("a");
+
+        const newButton = document.createElement("a");
+        let h = e
+          .querySelectorAll("th")[0]
+          .querySelectorAll("span")[1]
+          .getAttribute("bb:contextparameters");
+
+        const arr = h.split("&enrollType=");
+        h = arr[0].replace("course_id=&user_id=", "");
+        let courses = `${base}/webapps/blackboard/execute/userEnrollment?nav_item=list_courses_by_user&group_type=Course&user_id=${h}`;
+
+        newButton.setAttribute("href", courses);
+        newButton.setAttribute("target", "_blank");
+        newButton.setAttribute("style", "float:right");
+        newButton.setAttribute("title", "Cursos del usuario");
+        newButton.innerHTML = blackboard.courseIcon();
+
+        e.querySelectorAll("th")[0]
+          .querySelectorAll("a")[0]
+          .parentElement.parentElement.appendChild(organizationButton);
+      });
+    } catch (e) {
+      blackboard.doCatch(e);
+    }
+  },
+  getCoursesLinks: () => {
+    try {
+      if (!/execute\/userManager/.test(window.location.href)) {
+        return false;
+      }
+      const trs = document.querySelectorAll("#listContainer_databody tr");
+
+      trs.forEach((e) => {
+        const organizationButton = document.createElement("a");
+
+        const newButton = document.createElement("a");
+        let h = e
+          .querySelectorAll("th")[0]
+          .querySelectorAll("span")[1]
+          .getAttribute("bb:contextparameters");
+
+        const arr = h.split("&enrollType=");
+        h = arr[0].replace("course_id=&user_id=", "");
+        let courses = `${base}/webapps/blackboard/execute/userEnrollment?nav_item=list_courses_by_user&group_type=Course&user_id=${h}`;
+        let organization = `${base}/webapps/blackboard/execute/userEnrollment?nav_item=list_orgs_by_user&group_type=Organization&user_id=${h}`;
+
+        newButton.setAttribute("href", courses);
+        newButton.setAttribute("target", "_blank");
+        newButton.setAttribute("style", "float:right");
+        newButton.setAttribute("title", "Cursos del usuario");
+        newButton.innerHTML = blackboard.courseIcon();
+
+        organizationButton.setAttribute("href", organization);
+        organizationButton.setAttribute("target", "_blank");
+        organizationButton.setAttribute("style", "float:right");
+        organizationButton.setAttribute("title", "Organizaciones del usuario");
+        organizationButton.innerHTML = blackboard.organizationIcon();
+
+        e.querySelectorAll("th")[0]
+          .querySelectorAll("a")[0]
+          .parentElement.parentElement.appendChild(organizationButton);
+
+        e.querySelectorAll("th")[0]
+          .querySelectorAll("a")[0]
+          .parentElement.parentElement.appendChild(newButton);
+      });
+    } catch (error) {
+      blackboard.doCatch(error);
     }
   },
   extractCourseId: function (param, path = null) {
@@ -296,14 +392,46 @@ const blackboard = {
     );
     a.dispatchEvent(e);
   },
+  toJSONString: function (form) {
+    var obj = {};
+    var elements = form.querySelectorAll("input, select, textarea");
+    for (var i = 0; i < elements.length; ++i) {
+      var element = elements[i];
+      var name = element.name;
+      var value = element.value;
+
+      if (name) {
+        obj[name] = value;
+      }
+    }
+
+    return JSON.stringify(obj);
+  },
   runTasks: function () {
     if (/blackboard/.test(window.location.href)) {
       blackboard.addAuxiliarMenu();
       blackboard.addCoursesToCategoryUI();
       blackboard.getEnrollLink();
       blackboard.executeReport();
+      blackboard.getCoursesLinks();
     }
   },
 };
+
+function blackboardFormAction(form) {
+  var obj = {};
+  var elements = form.querySelectorAll("input, select, textarea");
+  for (var i = 0; i < elements.length; ++i) {
+    var element = elements[i];
+    var name = element.name;
+    var value = element.value;
+
+    if (name) {
+      obj[name] = value;
+    }
+  }
+
+  return JSON.stringify(obj);
+}
 
 blackboard.runTasks();
