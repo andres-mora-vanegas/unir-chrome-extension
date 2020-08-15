@@ -12,6 +12,7 @@ function zip() {
 
 function joinLibs() {
   try {
+    const moment = fs.readFileSync("./src/js/moment.js", "utf8");
     const moodle = fs.readFileSync("./src/js/moodle.js", "utf8");
     const blackboard = fs.readFileSync("./src/js/blackboard.js", "utf8");
     const manifest = fs.readFileSync("./manifest.json", "utf8");
@@ -20,7 +21,7 @@ function joinLibs() {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir);
     }
-    fs.writeFileSync(dir + "/content.js", moodle + blackboard);
+    fs.writeFileSync(dir + "/content.js", moment + moodle + blackboard);
     fs.writeFileSync(dir + "/styles.css", css);
     fs.writeFileSync(dir + "/manifest.json", manifest);
     fs.copySync("./icon.png", dir + "/icon.png");

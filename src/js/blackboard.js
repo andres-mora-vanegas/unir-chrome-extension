@@ -195,6 +195,114 @@ const blackboard = {
       blackboard.doCatch(error);
     }
   },
+  getDates: async (email) => {
+    try {
+      const url = `/learn/api/public/v1/users/userName:${email}?fields=created,modified,lastLogin`;
+      let response = await fetch(url);
+      response = await response.json();
+      return response;
+    } catch (error) {
+      blackboard.doCatch(error);
+    }
+  },
+  getDatesOfUsers: async () => {
+    try {
+      if (/userManager\?course_id=/.test(window.location.href)) {
+        const dataBody = document.querySelectorAll(
+          "#listContainer_databody tr"
+        );
+        const dataHead = document.querySelector(".inventoryListHead tr");
+        if (dataBody) {
+          const created = document.createElement("th");
+          const modified = document.createElement("th");
+          const lastLogin = document.createElement("th");
+          created.innerHTML = `<a>Fecha de creación</a>`;
+          modified.innerHTML = `<a>Fecha de modificación</a>`;
+          lastLogin.innerHTML = `<a>Último login</a>`;
+          dataHead.appendChild(lastLogin);
+          dataHead.appendChild(created);
+          dataHead.appendChild(modified);
+          for (const tr of dataBody) {
+            const username = tr
+              .querySelector(".profileCardAvatarThumb")
+              .innerText.trim();
+            const response = await blackboard.getDates(username);
+
+            const createdData = document.createElement("td");
+            const modifiedData = document.createElement("td");
+            const lastLoginData = document.createElement("td");
+            createdData.innerHTML = `<a>${response.created}</a>`;
+            modifiedData.innerHTML = `<a>${response.modified}</a>`;
+            lastLoginData.innerHTML = `<a>${response.lastLogin}</a>`;
+
+            tr.appendChild(lastLoginData);
+            tr.appendChild(createdData);
+            tr.appendChild(modifiedData);
+          }
+        }
+      }
+    } catch (error) {
+      blackboard.doCatch(error);
+    }
+  },
+  getLastLoginInfo: async (course, email) => {
+    try {
+      const url = `/learn/api/public/v1/courses/${course}/users/userName:${email}?fields=created,modified,lastAccessed`;
+      let response = await fetch(url);
+      response = await response.json();
+      return response;
+    } catch (error) {
+      blackboard.doCatch(error);
+    }
+  },
+  getLastLogin: async () => {
+    try {
+      if (/courseEnrollment/.test(window.location.href)) {
+        const href = window.location.href;
+        let url = new URL(href);
+        let params = new URLSearchParams(url.search);
+        const course = params.get("course_id");
+
+        const dataBody = document.querySelectorAll(
+          "#listContainer_databody tr"
+        );
+        const dataHead = document.querySelector(".inventoryListHead tr");
+        if (dataBody) {
+          const created = document.createElement("th");
+          const modified = document.createElement("th");
+          const lastLogin = document.createElement("th");
+          created.innerHTML = `<a>Fecha de inscripcion</a>`;
+          modified.innerHTML = `<a>Fecha de modificación</a>`;
+          lastLogin.innerHTML = `<a>Último login</a>`;
+          dataHead.appendChild(lastLogin);
+          dataHead.appendChild(created);
+          dataHead.appendChild(modified);
+          for (const tr of dataBody) {
+            const username = tr.querySelector("th").innerText.trim();
+            const response = await blackboard.getLastLoginInfo(
+              course,
+              username
+            );
+
+            const createdData = document.createElement("td");
+            const modifiedData = document.createElement("td");
+            const lastLoginData = document.createElement("td");
+            createdData.innerHTML = `<a>${response.created}</a>`;
+            modifiedData.innerHTML = `<a>${response.modified}</a>`;
+            lastLoginData.innerHTML = `<a>${
+              response.lastAccessed || "Nunca"
+            }</a>`;
+
+            tr.appendChild(lastLoginData);
+            tr.appendChild(createdData);
+            tr.appendChild(modifiedData);
+          }
+        }
+      }
+    } catch (error) {
+      blackboard.doCatch(error);
+    }
+  },
 
   addExternalScript: function () {
     const scr = document.createElement("script");
@@ -414,6 +522,8 @@ const blackboard = {
       blackboard.getEnrollLink();
       blackboard.executeReport();
       blackboard.getCoursesLinks();
+      blackboard.getDatesOfUsers();
+      blackboard.getLastLogin();
     }
   },
 };
