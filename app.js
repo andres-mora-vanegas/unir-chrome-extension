@@ -12,7 +12,8 @@ function zip() {
 
 function joinLibs() {
   try {
-    const moment = fs.readFileSync("./src/js/moment.js", "utf8");
+    const moment = fs.readFileSync("./src/js/moment.js", "utf8") + "\n";
+    // const moment = "";
     const moodle = fs.readFileSync("./src/js/moodle.js", "utf8");
     const blackboard = fs.readFileSync("./src/js/blackboard.js", "utf8");
     const manifest = fs.readFileSync("./manifest.json", "utf8");

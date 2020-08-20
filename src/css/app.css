@@ -26,3 +26,7 @@ h2 {
 .listitem.listitem-course.list-group-item.list-group-item-action.yui3-dd-drop.yui3-dd-draggable {
   background: #fff7eb;
 }
+
+.pointer {
+  cursor: pointer;
+}

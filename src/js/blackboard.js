@@ -231,9 +231,16 @@ const blackboard = {
             const createdData = document.createElement("td");
             const modifiedData = document.createElement("td");
             const lastLoginData = document.createElement("td");
-            createdData.innerHTML = `<a>${response.created}</a>`;
-            modifiedData.innerHTML = `<a>${response.modified}</a>`;
-            lastLoginData.innerHTML = `<a>${response.lastLogin}</a>`;
+
+            createdData.innerHTML = `<a>${blackboard.formatDate(
+              response.created
+            )}</a>`;
+            modifiedData.innerHTML = `<a>${blackboard.formatDate(
+              response.modified
+            )}</a>`;
+            lastLoginData.innerHTML = `<a>${blackboard.formatDate(
+              response.lastLogin
+            )}</a>`;
 
             tr.appendChild(lastLoginData);
             tr.appendChild(createdData);
@@ -245,8 +252,10 @@ const blackboard = {
       blackboard.doCatch(error);
     }
   },
-  getLastLoginInfo: async (course, email) => {
+  getLastLoginInfo: async (course, email, external = false) => {
     try {
+      course = external ? `externalId:${course}` : course;
+
       const url = `/learn/api/public/v1/courses/${course}/users/userName:${email}?fields=created,modified,lastAccessed`;
       let response = await fetch(url);
       response = await response.json();
@@ -257,11 +266,17 @@ const blackboard = {
   },
   getLastLogin: async () => {
     try {
-      if (/courseEnrollment/.test(window.location.href)) {
+      if (/courseEnrollment|userEnrollment/.test(window.location.href)) {
         const href = window.location.href;
         let url = new URL(href);
         let params = new URLSearchParams(url.search);
-        const course = params.get("course_id");
+        let course = params.get("course_id");
+        const userId = params.get("user_id");
+        let email = document.querySelector("#pageTitleText").innerText;
+        email = email.split(" ");
+        email = email[email.length - 1];
+        console.log(`email`, email);
+        console.log(`course`, course);
 
         const dataBody = document.querySelectorAll(
           "#listContainer_databody tr"
@@ -271,31 +286,59 @@ const blackboard = {
           const created = document.createElement("th");
           const modified = document.createElement("th");
           const lastLogin = document.createElement("th");
-          created.innerHTML = `<a>Fecha de inscripcion</a>`;
+          created.innerHTML = `<a>Fecha de inscripción</a>`;
           modified.innerHTML = `<a>Fecha de modificación</a>`;
-          lastLogin.innerHTML = `<a>Último login</a>`;
+          lastLogin.innerHTML = `<a>Último acceso</a>`;
           dataHead.appendChild(lastLogin);
           dataHead.appendChild(created);
           dataHead.appendChild(modified);
           for (const tr of dataBody) {
-            const username = tr.querySelector("th").innerText.trim();
+            const username =
+              userId == null ? tr.querySelector("th").innerText.trim() : email;
+            course =
+              userId == null
+                ? course
+                : tr
+                    .querySelectorAll("td")[1]
+                    .querySelector(".table-data-cell-value")
+                    .innerText.trim();
+            const external = userId != null ? true : false;
             const response = await blackboard.getLastLoginInfo(
               course,
-              username
+              username,
+              external
             );
 
             const createdData = document.createElement("td");
             const modifiedData = document.createElement("td");
             const lastLoginData = document.createElement("td");
-            createdData.innerHTML = `<a>${response.created}</a>`;
-            modifiedData.innerHTML = `<a>${response.modified}</a>`;
-            lastLoginData.innerHTML = `<a>${
-              response.lastAccessed || "Nunca"
-            }</a>`;
+            const options = document.createElement("td");
+
+            const checkInactivate = tr.querySelector("td input");
+
+            const toggle =
+              checkInactivate == null
+                ? `<a class="central-activate-enroll pointer" data-id="${username}|${course}" >Activar</a>`
+                : ``;
+            options.innerHTML = `
+            ${toggle}
+            <a class="central-delete-enroll pointer" data-id="${username}|${course}">Eliminar</a>
+            `;
+
+            createdData.innerHTML = `<a>${blackboard.formatDate(
+              response.created
+            )}</a>`;
+            modifiedData.innerHTML = `<a>${blackboard.formatDate(
+              response.modified
+            )}</a>`;
+            lastLoginData.innerHTML = `<a>${blackboard.formatDate(
+              response.lastAccessed
+            )}</a>`;
 
             tr.appendChild(lastLoginData);
             tr.appendChild(createdData);
             tr.appendChild(modifiedData);
+            // tr.appendChild(options);
           }
         }
       }
@@ -303,7 +346,16 @@ const blackboard = {
       blackboard.doCatch(error);
     }
   },
-
+  formatDate: (str) => {
+    try {
+      if (str !== null && str != undefined) {
+        return moment(str).format("DD-MM-YYYY HH:mm");
+      }
+      return "Nunca";
+    } catch (error) {
+      blackboard.doCatch(error);
+    }
+  },
   addExternalScript: function () {
     const scr = document.createElement("script");
     scr.setAttribute("src", "http://127.0.0.1:5500/src/app.blackboard.js");
@@ -462,6 +514,45 @@ const blackboard = {
       //saveJSON(getEnrollByCourse(), extractCourseId("course_id") + ".json");
     }
   },
+  handleEnrollActivate: async (e) => {
+    let response = {};
+    try {
+      debugger;
+      const data = e.target.getAttribute("data-id").split("|");
+      const email = data[0];
+      const course = /_1/.test(data[1]) ? data[1] : `externalId:${data[1]}`;
+      const options = {
+        method: "patch",
+        url: `/learn/api/public/v1/courses/${course}/users/userName:${email}`,
+        headers: {
+          headers: {
+            "Content-type": "application/json",
+          },
+        },
+        body: {
+          availability: {
+            available: "Yes",
+          },
+        },
+      };
+      response = await fetch(options.url, options);
+      response = await response.json();
+    } catch (error) {
+      blackboard.doCatch(error);
+    }
+  },
+  liveEvents: () => {
+    window.addEventListener("click", async function (e) {
+      if (/central-activate-enroll/.test(e.target.classList)) {
+        e.preventDefault();
+        await blackboard.handleEnrollActivate(e);
+      }
+      if (/central-delete-enroll/.test(e.target.classList)) {
+        e.preventDefault();
+        blackboard.handleEnrollDelete(e);
+      }
+    });
+  },
   saveJSON: function (data, filename) {
     if (!data) {
       console.error("No data");
@@ -524,6 +615,7 @@ const blackboard = {
       blackboard.getCoursesLinks();
       blackboard.getDatesOfUsers();
       blackboard.getLastLogin();
+      blackboard.liveEvents();
     }
   },
 };

@@ -65,13 +65,17 @@ body {
   background-image: initial !important;
 }
 
-table{
-	width: 100% !important;
+table {
+  width: 100% !important;
 }
 
-.contenedor {  
+.contenedor {
   width: 80% !important;
   margin: auto !important;
+}
+
+.pointer {
+  cursor: pointer;
 }
 
 /**
