@@ -1,4 +1,4 @@
-const master_link = "https://ucentral.blackboard.com";
+const master_link = window.location.origin;
 const base = master_link;
 
 const blackboard = {
@@ -156,9 +156,9 @@ const blackboard = {
       <br>
       <a href="${base}/webapps/blackboard/execute/userManager?course_id=" >Buscar usuarios</a>
       <br>
-      <a href="${base}/webapps/bb-data-integration-flatfile-BB5d263be42ae14/execute/uploadFeed?diId=_18_1">Subir usuarios</a>
+      <a href="${base}/webapps/usf-impersonate-BB5d263be42ae14/link.jsp" >Entrar como</a>
       <br>
-      <a href="${base}/webapps/bb-data-integration-flatfile-BB5d263be42ae14/execute/uploadFeed?diId=_20_1">Subir enrollment</a>
+      <a href="${base}/webapps/bb-data-integration-flatfile-BB5d263be42ae14/execute/uploadFeed?diId=_18_1">Subir archivos</a>
       </div>`;
 
     document.body.prepend(par);
@@ -272,11 +272,11 @@ const blackboard = {
         let params = new URLSearchParams(url.search);
         let course = params.get("course_id");
         const userId = params.get("user_id");
+
+        blackboard.addOnlyActive();
         let email = document.querySelector("#pageTitleText").innerText;
         email = email.split(" ");
         email = email[email.length - 1];
-        console.log(`email`, email);
-        console.log(`course`, course);
 
         const dataBody = document.querySelectorAll(
           "#listContainer_databody tr"
@@ -342,6 +342,17 @@ const blackboard = {
           }
         }
       }
+    } catch (error) {
+      blackboard.doCatch(error);
+    }
+  },
+  addOnlyActive: () => {
+    try {
+      const titleDiv = document.querySelector("#pageTitleDiv");
+      const check = document.createElement("div");
+      check.setAttribute("class", "float-right");
+      check.innerHTML = `<label for="onlyActive">Solo activos </label><input type="checkbox" id="onlyActive" class="onlyActive">`;
+      titleDiv.appendChild(check);
     } catch (error) {
       blackboard.doCatch(error);
     }
@@ -509,7 +520,6 @@ const blackboard = {
   executeReport: function () {
     const h = window.location.href;
     const regex = /\/webapps\/blackboard\/execute\/courseEnrollment\?sortDir=ASCENDING&showAll=true&sourceType=COURSES&editPaging=false&course_id=/;
-    console.log(regex.test(h));
     if (regex.test(h)) {
       //saveJSON(getEnrollByCourse(), extractCourseId("course_id") + ".json");
     }
@@ -551,7 +561,25 @@ const blackboard = {
         e.preventDefault();
         blackboard.handleEnrollDelete(e);
       }
+      if (/onlyActive/.test(e.target.classList)) {
+        await blackboard.onlyActiveAction(e);
+      }
     });
+  },
+  onlyActiveAction: (e) => {
+    try {
+      document.querySelectorAll("#listContainer_databody tr").forEach((r) => {
+        if (r.querySelector('img[alt*="eshabilitad"]')) {
+          if (e.target.checked) {
+            r.classList.add("d-none");
+          } else {
+            r.classList.remove("d-none");
+          }
+        }
+      });
+    } catch (error) {
+      blackboard.doCatch(error);
+    }
   },
   saveJSON: function (data, filename) {
     if (!data) {
