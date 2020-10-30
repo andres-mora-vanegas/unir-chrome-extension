@@ -115,25 +115,21 @@ ui.addAuxiliarMenu = function () {
 ui.addAnalytics = () => {
   setTimeout(() => {
     try {
-      const href = window.location.href;
-      const rg = new RegExp("ultra/courses/*.*/analytics/");
-      if (rg.test(href)) {
-        const nav = document.querySelector(
-          ".course-analytics__view-tabs.analytics-tools.button-group"
-        );
-        if (nav) {
-          const li = document.createElement("li");
-          li.innerHTML = `
-          <a class="button super-clear course-tool-tab js-question-analysis-tab userAnalytics" >Análisis de usuarios</a>
-          
-          `;
-          nav.appendChild(li);
-        }
+      const nav = document.querySelector(
+        ".course-analytics__view-tabs.analytics-tools.button-group"
+      );
+      if (nav && nav.querySelector(".userAnalytics") == null) {
+        const li = document.createElement("li");
+        li.innerHTML = `
+            <a class="button super-clear course-tool-tab js-question-analysis-tab userAnalytics" >Análisis de usuarios</a>
+            
+            `;
+        nav.appendChild(li);
       }
     } catch (error) {
       util.doCatch(error);
     }
-  }, 4000);
+  }, 2000);
 };
 
 ui.printAnalytics = () => {

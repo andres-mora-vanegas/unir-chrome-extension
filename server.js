@@ -1,6 +1,7 @@
 const watch = require("node-watch");
 const fs = require("fs-extra");
 const zipFolder = require("zip-a-folder");
+const UglifyJS = require("uglify-es");
 
 function zip() {
   zipFolder.zipFolder("./toDeploy", "./deploy.zip", function (err) {
@@ -29,14 +30,21 @@ function joinLibs() {
   try {
     const moment = fs.readFileSync("./src/js/moment.js", "utf8") + "\n";
     // const moment = "";
-    const joined = fs.readFileSync("./dist/app-joined.js", "utf8");
+    const options = {
+      mangle: {
+        // ecma: 6,
+      },
+    };
+
+    let joined = fs.readFileSync("./dist/app-joined.js", "utf8");
+    joined = UglifyJS.minify(joined, options);
     const manifest = fs.readFileSync("./manifest.json", "utf8");
     const css = fs.readFileSync("./src/css/app.css", "utf8");
     const dir = "./toDeploy";
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir);
     }
-    fs.writeFileSync(dir + "/content.js", moment + joined);
+    fs.writeFileSync(dir + "/content.js", moment + joined.code);
     fs.writeFileSync(dir + "/styles.css", css);
     fs.writeFileSync(dir + "/manifest.json", manifest);
     fs.copySync("./icon.png", dir + "/icon.png");

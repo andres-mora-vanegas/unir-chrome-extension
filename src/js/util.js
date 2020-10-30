@@ -26,6 +26,8 @@ util.addExternalScriptMoodle = function () {
 
 util.liveEvents = () => {
   window.addEventListener("click", async function (e) {
+    let bbpeak = e.target.getAttribute("bb-peek-sref");
+    bbpeak = bbpeak == null ? e.target.getAttribute("icon") : null;
     if (/central-activate-enroll/.test(e.target.classList)) {
       e.preventDefault();
       await blackboard.handleEnrollActivate(e);
@@ -43,6 +45,24 @@ util.liveEvents = () => {
     if (/viewAnalyticDetail/.test(e.target.classList)) {
       await blackboard.getCourseAnalyticsDetail(e);
     }
+    if (
+      bbpeak &&
+      new RegExp("course.analytics.question-analysi|beast-analytics").test(
+        bbpeak
+      )
+    ) {
+      ui.addAnalytics();
+    }
+  });
+  // window.addEventListener("popstate", (href) => {
+  //   history.pushState({}, "", href);
+  //   console.log(`1`, 1);
+  //   blackboard.getCourseAnalytics();
+  //   window.dispatchEvent(new Event("popstate"));
+  // });
+  window.addEventListener("locationchange", function (event) {
+    // Log the state data to the console
+    console.log(event.state);
   });
 };
 util.generateJSON = function (data, filename) {

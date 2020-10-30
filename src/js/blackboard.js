@@ -135,9 +135,10 @@ blackboard.getLastLogin = async () => {
         dataHead.appendChild(lastLogin);
         dataHead.appendChild(created);
         dataHead.appendChild(modified);
+        let usersInfo = [];
         if (course) {
           const tempCourse = course != null ? course : userId;
-          const usersInfo = await api.getUsersByCourse(tempCourse);
+          usersInfo = await api.getUsersByCourse(tempCourse);
         }
         for (const tr of dataBody) {
           const username =
@@ -411,10 +412,10 @@ blackboard.getCourseAnalytics = async (e) => {
   try {
     const href = window.location.href;
     let courseId = href.match(/\/courses\/(.*?)\/analytics/);
-    document.querySelector(".view-container").innerHTML = "Cargando...";
+    document.querySelector(".view-container").innerHTML =
+      "<h1 style='text-align:center;margin-top:55px'>Cargando...</h1>";
 
     const users = await api.getUsersByCourse(courseId[1]);
-    console.log(`users`, users);
     const rgx = new RegExp("_(.*?)_1");
     courseId = courseId[1].match(rgx);
     if (courseId.length > 0) {
