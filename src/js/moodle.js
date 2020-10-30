@@ -1,3 +1,4 @@
+//add function
 function addAuxMenu() {
   const par = document.createElement("div");
   const url = "http://ucentral.mrooms.net/";
@@ -18,4 +19,4 @@ function addAuxMenu() {
   }
 }
 
-addAuxMenu();
+// addAuxMenu();

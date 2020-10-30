@@ -1,7 +1,4 @@
-const master_link = "https://ucentral.blackboard.com";
-const base = master_link;
-
-async function validCategoryCourses() {
+/* async function validCategoryCourses() {
   let response = [];
   try {
     const href = window.location.href;
@@ -64,7 +61,7 @@ function addLinksToMainUltra() {
     const href = window.location.href;
     const $baseTools = document.querySelector("#base_tools");
     if ($baseTools == null) {
-      return false;      
+      return false;
     }
     const $item = $baseTools
       .querySelectorAll("bb-base-navigation-button")[1]
@@ -172,7 +169,7 @@ function addExternalScript() {
 function getUsersBlackboard() {
   try {
     const users = [];
-    document.querySelectorAll("#listContainer_databody tr").forEach(e => {
+    document.querySelectorAll("#listContainer_databody tr").forEach((e) => {
       const user = {
         name: e
           .querySelector("td:nth-child(4)")
@@ -186,7 +183,7 @@ function getUsersBlackboard() {
           .querySelector("span:nth-child(2)").innerHTML,
         fuente: e
           .querySelector("td:nth-child(9)")
-          .querySelector("span:nth-child(2)").innerHTML
+          .querySelector("span:nth-child(2)").innerHTML,
       };
       users.push(user);
     });
@@ -197,10 +194,10 @@ function getUsersBlackboard() {
 }
 
 function runTasks() {
-  addAuxiliarMenu();
-  addCoursesToCategoryUI();
-  getEnrollLink();
-  executeReport();
+  // addAuxiliarMenu();
+  // addCoursesToCategoryUI();
+  // getEnrollLink();
+  // executeReport();
 }
 
 function addExternalScript() {
@@ -224,7 +221,7 @@ function generateFile(data) {
 function getEnrollByCourse() {
   const users = [];
 
-  document.querySelectorAll("#listContainer_databody tr").forEach(e => {
+  document.querySelectorAll("#listContainer_databody tr").forEach((e) => {
     const user = {
       name: e.querySelectorAll("td")[2].querySelectorAll("span")[1].innerHTML,
       lastname: e.querySelectorAll("td")[3].querySelectorAll("span")[1]
@@ -232,7 +229,7 @@ function getEnrollByCourse() {
       email: e.querySelectorAll("td")[4].querySelector("a").innerHTML,
       rol: e.querySelectorAll("td")[5].querySelectorAll("span")[1].innerHTML,
       coursename: document.querySelector("#pageTitleText").innerHTML,
-      courseId: extractCourseId()
+      courseId: extractCourseId(),
     };
     users.push(user);
   });
@@ -242,7 +239,7 @@ function getEnrollByCourse() {
 
 function getEnrollLink() {
   try {
-    document.querySelectorAll("#listContainer_databody tr").forEach(e => {
+    document.querySelectorAll("#listContainer_databody tr").forEach((e) => {
       const newButton = document.createElement("a");
       let h = e
         .querySelectorAll("td")[1]
@@ -321,3 +318,4 @@ function saveJSON(data, filename) {
 runTasks();
 
 //addExternalScript();
+ */

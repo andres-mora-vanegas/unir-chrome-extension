@@ -4,7 +4,7 @@
   "description": "basic files to create a chrome extension once intalled is possible to open the courses with a custom modal make it with css and JavaScript.",
   "main": "content.js",
   "scripts": {
-    "dev": "node app"
+    "dev": "node server"
   },
   "repository": {
     "type": "git",
