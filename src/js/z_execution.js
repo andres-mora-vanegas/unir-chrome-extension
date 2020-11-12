@@ -1,4 +1,4 @@
-function run() {
+async function run() {
   if (/blackboard/.test(window.location.href)) {
     ui.addSweetAlertLib();
     ui.addAuxiliarMenu();
@@ -10,7 +10,11 @@ function run() {
     blackboard.getLastLogin();
     util.liveEvents();
     ui.addAnalytics();
+    // blackboard.getSessions();
+    // blackboard.updateSession();
+    // await blackboard.findSessions();
   }
+  // await blackboard.inactivateSessions();
 }
 
 run();
